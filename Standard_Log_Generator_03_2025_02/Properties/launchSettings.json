@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Standard_Log_Generator_03_2025_02": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Autodesk\\Revit 2025\\Revit.exe"
+    }
+  }
+}
