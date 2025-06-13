@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -166,10 +167,12 @@ namespace Standard_Log_Generator_03_2025_02
 
             try
             {
+                Dictionary<string, ElementData> existingData = new Dictionary<string, ElementData>();
 
                 if (!string.IsNullOrEmpty(selectedColorStatus) && !string.IsNullOrEmpty(GlobalVariable.fileName))
                 {
                     Dictionary<string, ElementData> formattedElements = new Dictionary<string, ElementData>();
+
 
                     // Convert the dictionary to the required format
                     foreach (var kvp in selectedElements)
@@ -177,9 +180,31 @@ namespace Standard_Log_Generator_03_2025_02
                         formattedElements[kvp.Key.ToString()] = kvp.Value;
                     }
 
+                    // If JSON contains data, add it to formattedElements dictionary
+                    if (File.Exists(GlobalVariable.filePath) && new FileInfo(GlobalVariable.filePath).Length > 0)
+                    {
+                        string content = File.ReadAllText(GlobalVariable.filePath);
+                        JObject jsonObject = JObject.Parse(content);
+
+                        foreach (var kvp in jsonObject)
+                        {
+                            ElementData elementData = kvp.Value.ToObject<ElementData>();
+                            if (elementData != null)
+                            {
+                                existingData[kvp.Key] = elementData;
+                            }
+                        }
+
+                        foreach (var kvp in existingData)
+                        {
+                            formattedElements[kvp.Key] = kvp.Value;
+                        }
+                    }
+
                     try
                     {
                         string json = JsonConvert.SerializeObject(formattedElements, Formatting.Indented);
+                        
                         File.WriteAllText(GlobalVariable.filePath, json);
                         MessageBox.Show("Data saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -289,10 +314,105 @@ namespace Standard_Log_Generator_03_2025_02
                 this.Close();
             }
         }
-
-        private void BrowseButton_Click(object sender, RoutedEventArgs e)
+        private void ExistingFileSaveCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             // to browse the folder to save
+
+            //System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog()
+            //{
+            //    RootFolder = Environment.SpecialFolder.MyDocuments
+            //};
+            //System.Windows.Forms.DialogResult result = folderDialog.ShowDialog();
+            //if (result != System.Windows.Forms.DialogResult.OK)
+            //{
+            //    MessageBox.Show("No folder selected. Please select a folder to save the report.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
+
+            //string cmAppFolder = Path.Combine(folderDialog.SelectedPath, "CM_app_Report");
+
+            //if (!Directory.Exists(cmAppFolder))
+            //{
+            //    Directory.CreateDirectory(cmAppFolder);
+            //}
+            //// Get Revit file name and current date/time
+            //string revitFileName = Path.GetFileNameWithoutExtension(uiDoc.Document.Title);
+            //string dateTime = DateTime.Now.ToString("ddMMyyyy_HHmmss");
+            //string jsonFileName = $"{revitFileName}_{dateTime}.json";
+
+            //string filePath = Path.Combine(cmAppFolder, jsonFileName);
+            ////Set the file name and file path to the setter
+            ////GlobalVariable globalVariable = new GlobalVariable();
+            //GlobalVariable.fileName = jsonFileName;
+            //GlobalVariable.filePath = filePath;
+        }
+
+        private void ExistingFileSaveCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            // File selection dialog for existing JSON files
+            //Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog
+            //{
+            //    DefaultExt = ".json",
+            //    Filter = "JSON files (*.json)|*.json",
+            //    InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CM_app_Report")
+            //};
+
+            //if (openFileDialog.ShowDialog() == true)
+            //{
+            //    GlobalVariable.fileName = Path.GetFileName(openFileDialog.FileName);
+            //    GlobalVariable.filePath = openFileDialog.FileName;
+            //    GlobalVariable.folderToSave = Path.GetDirectoryName(openFileDialog.FileName);
+
+            //    // Optional: Load existing data from the selected file
+            //    try
+            //    {
+            //        string jsonContent = File.ReadAllText(openFileDialog.FileName);
+            //        var existingData = JsonConvert.DeserializeObject<Dictionary<string, ElementData>>(jsonContent);
+            //        // You might want to process the existing data here
+            //        MessageBox.Show("Existing file selected successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        MessageBox.Show($"Error reading the selected file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    }
+            //}
+        }
+
+        private void ExistingFileButton_Click(object sender, RoutedEventArgs e) {
+
+            //File selection dialog for existing JSON files
+
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".json",
+                Filter = "JSON files (*.json)|*.json",
+                InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CM_app_Report")
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                GlobalVariable.fileName = Path.GetFileName(openFileDialog.FileName);
+                GlobalVariable.filePath = openFileDialog.FileName;
+                GlobalVariable.folderToSave = Path.GetDirectoryName(openFileDialog.FileName);
+
+                // Optional: Load existing data from the selected file
+                try
+                {
+                    string jsonContent = File.ReadAllText(openFileDialog.FileName);
+                    var existingData = JsonConvert.DeserializeObject<Dictionary<string, ElementData>>(jsonContent);
+                    // You might want to process the existing data here
+                    MessageBox.Show("Existing file selected successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error reading the selected file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        private void CreateNewFileButton_Click(object sender, RoutedEventArgs e) {
+
+
+            //to browse the folder to save
 
             System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog()
             {
@@ -322,6 +442,51 @@ namespace Standard_Log_Generator_03_2025_02
             GlobalVariable.fileName = jsonFileName;
             GlobalVariable.filePath = filePath;
 
+            
+
+        }
+        private void BrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            //if (ExistingFileSaveCheckBox.IsChecked == true)
+            //{
+            //    ExistingFileSaveCheckBox_Checked(sender, e);
+            //}
+            //else
+            //{
+            //    ExistingFileSaveCheckBox_Unchecked(sender, e);
+            //}
+
+            #region folder code implementation.....
+            //// to browse the folder to save
+
+            //System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog()
+            //{
+            //    RootFolder = Environment.SpecialFolder.MyDocuments
+            //};
+            //System.Windows.Forms.DialogResult result = folderDialog.ShowDialog();
+            //if (result != System.Windows.Forms.DialogResult.OK)
+            //{
+            //    MessageBox.Show("No folder selected. Please select a folder to save the report.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
+
+            //string cmAppFolder = Path.Combine(folderDialog.SelectedPath, "CM_app_Report");
+
+            //if (!Directory.Exists(cmAppFolder))
+            //{
+            //    Directory.CreateDirectory(cmAppFolder);
+            //}
+            //// Get Revit file name and current date/time
+            //string revitFileName = Path.GetFileNameWithoutExtension(uiDoc.Document.Title);
+            //string dateTime = DateTime.Now.ToString("ddMMyyyy_HHmmss");
+            //string jsonFileName = $"{revitFileName}_{dateTime}.json";
+
+            //string filePath = Path.Combine(cmAppFolder, jsonFileName);
+            ////Set the file name and file path to the setter
+            ////GlobalVariable globalVariable = new GlobalVariable();
+            //GlobalVariable.fileName = jsonFileName;
+            //GlobalVariable.filePath = filePath;
+            #endregion
         }
 
         private void AddMoreElementsButton_Click(object sender, RoutedEventArgs e)

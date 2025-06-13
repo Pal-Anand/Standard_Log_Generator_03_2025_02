@@ -27,20 +27,65 @@
                 <ComboBoxItem Content="Yellow" Tag="PartiallyComplete"/>
                 <ComboBoxItem Content="Grey" Tag="Incomplete"/>
                 <ComboBoxItem Content="Orange" Tag="NeedsReview"/>
+
             </ComboBox>
         </StackPanel>
 
         <!--<StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,10">
-      <Label Content="File Name:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-      <TextBox x:Name="FileNameTextBox" Width="250" Height="25" />
-  </StackPanel>-->
-
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,10">
             <Button Content="OK" Width="75" Margin="0,0,5,0" Click="OkButton_Click"/>
             <Button Content="Remove Selected ID" Width="123" Click="RemoveButton_Click" Height="37"/>
             <Button Content="Add More Elements" Width="117" Margin="5,0,0,0" Click="AddMoreElementsButton_Click"/>
             <Button Content="Browse" Click="BrowseButton_Click" Margin="5,0,0,0" Width="54"/>
             <Button Content="Cancel" Width="75" Margin="5,0,0,0" Click="CancelButton_Click"/>
-        </StackPanel>
+        </StackPanel>-->
+
+        <!-- Main Button Panel -->
+        <WrapPanel Grid.Row="3" Margin="0,0,0,10" HorizontalAlignment="Left">
+            <!-- Primary Buttons -->
+            <Button Content="OK" Width="60" Height="30" Margin="0,0,5,5" Click="OkButton_Click"/>
+            <Button Content="Remove Selected ID" Width="123" Height="30" Margin="0,0,5,5" Click="RemoveButton_Click"/>
+            <Button Content="Add More Elements" Width="117" Height="30" Margin="0,0,5,5" Click="AddMoreElementsButton_Click"/>
+
+            <!-- File Operations Group -->
+            <Grid Margin="0,0,5,5">
+                <ToggleButton x:Name="DropDownToggle" 
+                         Content="File Options ▼" 
+                         Width="90" 
+                         Height="30"
+                         Background="#FFF0F0F0"
+                         BorderBrush="#FFACACAC"/>
+                <Popup PlacementTarget="{Binding ElementName=DropDownToggle}"
+                   Placement="Bottom"
+                   StaysOpen="False"
+                   IsOpen="{Binding IsChecked, ElementName=DropDownToggle}">
+                    <Border Background="White" 
+                        BorderBrush="#FFACACAC" 
+                        BorderThickness="1" 
+                        CornerRadius="3" 
+                        Padding="2">
+                        <StackPanel Width="150">
+                            <Button Content="Select Existing File" 
+                                Height="30" 
+                                Margin="1"
+                                Click="ExistingFileButton_Click"/>
+                            <Button Content="Create New File" 
+                                Height="30" 
+                                Margin="1"
+                                Click="CreateNewFileButton_Click"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+            </Grid>
+
+            <!-- Cancel Button -->
+            <Button Content="Cancel" 
+                Width="50" 
+                Height="30" 
+                Margin="0,0,5,5" 
+                Click="CancelButton_Click"
+                Background="#FFFFE8E8"
+                BorderBrush="#FFACACAC"/>
+        </WrapPanel>
+
     </Grid>
 </Window>

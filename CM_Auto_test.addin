@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>CM</Name>
+    <Assembly>D:\Anand Test\Construct_Monitor_Final_Automation\Standard_Log_Generator_03\Standard_Log_Generator_03_2025_02\Standard_Log_Generator_03_2025_02\bin\Debug\net8.0-windows\Standard_Log_Generator_03_2025_02.dll</Assembly>
+    <AddInId>CD9E9E0F-2773-4CBF-95DF-92F1CFA455BD</AddInId>
+    <FullClassName>Standard_Log_Generator_03_2025_02.App</FullClassName>
+    <VendorId>Neilsoft</VendorId>
+    <VendorDescription>Neilsoft, www.neilsoft.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>

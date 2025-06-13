@@ -30,6 +30,7 @@ namespace Standard_Log_Generator_03_2025_02
     [Transaction(TransactionMode.Manual)]
     internal class VerifyModel : IExternalCommand
     {
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
